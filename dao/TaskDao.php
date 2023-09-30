@@ -1,7 +1,5 @@
 <?php
 include_once '../config/Database.php';
-include_once '../models/TaskModel.php';
-
 class TaskDao
 {
     private $db;
@@ -9,7 +7,6 @@ class TaskDao
 
     public function __construct()
     {
-
         $this->db = Database::getInstance();
         $this->con = $this->db->getConnection();
     }
@@ -19,20 +16,9 @@ class TaskDao
         $query = "SELECT * FROM task";
         $stmt = $this->con->query($query);
         $tasks = [];
-
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-
-            $task = new Task(
-                $row['UID_TASK'],
-                $row['NAME_TASK'],
-                $row['STATUS_TASK'],
-                $row['DESC_TASK'],
-                $row['DATE_CREATED_TASK']
-            );
-
-            $tasks[] = $task->jsonSerialize();
+            $tasks[] = $row;
         }
-
         return $tasks;
     }
 
@@ -47,25 +33,36 @@ class TaskDao
                 $tasks = [];
 
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $task = new Task(
-                        $row['UID_TASK'],
-                        $row['NAME_TASK'],
-                        $row['STATUS_TASK'],
-                        $row['DESC_TASK'],
-                        $row['DATE_CREATED_TASK']
-                    );
-                    $tasks[] = $task->jsonSerialize();
+                    $tasks[] = $row;
                 }
 
                 return $tasks;
             } else {
-                // Hubo un error en la consulta
                 return null;
             }
         } catch (PDOException $e) {
-            // Manejo de errores de base de datos
-            // Puedes registrar el error o lanzar una excepción si es necesario
             return null;
+        }
+    }
+    public function addTask($task)
+    {
+        try {
+            $name = $task->getName();
+            $status = $task->getStatus();
+            $desc = $task->getDescription();
+            $query = "INSERT INTO `task` (`UID_TASK`, `NAME_TASK`, `STATUS_TASK`, `DESC_TASK`, `DATE_CREATED_TASK`) VALUES (NULL, :name, :status, :desc, NOW())";
+            $stmt = $this->con->prepare($query);
+            $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+            $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
+            $stmt->bindParam(':desc', $desc, PDO::PARAM_STR);
+            if ($stmt->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            echo "Error al agregar la tarea: " . $e->getMessage();
+            return false;
         }
     }
 
@@ -75,7 +72,23 @@ class TaskDao
         $query = "DELETE FROM task WHERE UID_TASK = :id";
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
+    public function updateTask( $id, $task){
+        $name = $task->getName();
+        $status = $task->getStatus();
+        $desc = $task->getDescription();
+        $query = "UPDATE `task` SET `NAME_TASK` = :name, `STATUS_TASK` = :status, `DESC_TASK` = :desc WHERE UID_TASK = :id";
+        $stmt = $this->con->prepare($query);
+        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+        $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
+        $stmt->bindParam(':desc', $desc, PDO::PARAM_STR);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         if ($stmt->execute()) {
             return true;
         } else {

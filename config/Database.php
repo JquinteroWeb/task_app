@@ -17,7 +17,6 @@ class Database
     {
         try {
             $config = parse_ini_file('config.ini', true);
-
             $this->host = isset($config['database']['hostname']) ? $config['database']['hostname'] : 'localhost';
             $this->port = isset($config['database']['port']) ? $config['database']['port'] : '5432';
             $this->username = isset($config['database']['username']) ? $config['database']['username'] : 'postgres';

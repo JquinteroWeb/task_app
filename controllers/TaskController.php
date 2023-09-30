@@ -1,39 +1,61 @@
 <?php
 
-require_once ('../dao/TaskDao.php');
+require_once('../dao/TaskDao.php');
+require_once('../models/TaskModel.php');
 
 class TaskController
 {
+    private $TaskDAO;
+
+    public function __construct() {
+        $this->TaskDAO = new TaskDao();
+    }
+
     public function listTasks()
-    {
-        $objTaskDao = new TaskDao();
+    {        
         http_response_code(200);
         header('Content-Type: application/json');
-        echo json_encode($objTaskDao->getAllTasks());
+        echo json_encode($this->TaskDAO->getAllTasks());
     }
 
-    public function getTask($id){
-        $objTaskDao = new TaskDao();
+    public function getTask($id)
+    {        
         http_response_code(200);
         header('Content-Type: application/json');
-        echo json_encode($objTaskDao->getTask($id));
-
+        echo json_encode($this->TaskDAO->getTask($id));
     }
 
-    public function createTask()
+    public function createTask($task)
     {
-
+        header('Content-Type: application/json');       
+        $objTaskModel = new Task($task['name'], $task['status'], $task['description']);             
+        if($this->TaskDAO->addTask($objTaskModel)){
+            http_response_code(201);
+            echo json_encode(['code'=> '1' , 'message' => 'Task added successfully']);
+        }else{
+            http_response_code(403);
+            echo json_encode(['code'=> '0' , 'message' => 'Task added error']);
+        }
+        
     }
 
-    public function editTask($taskId)
+    public function updateTask($id , $task)
     {
-    }
+        header('Content-Type: application/json');  
+        $objTaskModel = new Task($task['name'], $task['status'], $task['description']);        
+        if($this->TaskDAO->updateTask( $id ,$objTaskModel)){
+            http_response_code(200);
+            echo json_encode(['code'=> '1' , 'message' => 'Task updated successfully']);
+        }else{
+            http_response_code(403);
+            echo json_encode(['code'=> '0' , 'message' => 'Task updated error']);
+        }
+    }  
 
-    public function completeTask($taskId)
+    public function deleteTask($id)
     {
-    }
-
-    public function deleteTask($taskId)
-    {
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode($this->TaskDAO->deleteTask($id));  
     }
 }

@@ -5,10 +5,13 @@ $objTaskController = new TaskController();
 
 switch ($metho) {
     case 'POST':
-        if (isset($_POST['name']) && isset($_POST['description']) && isset($_POST['status'])) {
-            $name = trim($_POST['name']);
-            $description = trim($_POST['description']);
-            $status = trim($_POST['status']);
+        $putData = file_get_contents("php://input");     
+        $jsonData = json_decode($putData, true);
+
+        if (isset($jsonData['name']) && isset($jsonData['description']) && isset($jsonData['status'])) {
+            $name = trim($jsonData['name']);
+            $description = trim($jsonData['description']);
+            $status = trim($jsonData['status']);
             $objTaskController->createTask(['name' => $name, 'description' => $description, 'status' => $status]);
         } else {
             header('Content-Type: application/json');
@@ -25,8 +28,7 @@ switch ($metho) {
         }
         break;
     case 'PUT':        
-        $putData = file_get_contents("php://input");
-        // Verificar si los datos son JSON válidos
+        $putData = file_get_contents("php://input");        
         $jsonData = json_decode($putData, true);           
 
         if(isset($jsonData['name']) && isset($jsonData['description']) && isset($jsonData['status']) && isset($jsonData['id']) ){

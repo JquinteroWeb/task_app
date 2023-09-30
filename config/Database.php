@@ -22,9 +22,9 @@ class Database
             $this->username = isset($config['database']['username']) ? $config['database']['username'] : 'postgres';
             $this->password = isset($config['database']['password']) ? $config['database']['password'] : '';
             $this->database_name = isset($config['database']['database_name']) ? $config['database']['database_name'] : 'postgres';
-            $this->engine = isset($config['database']['engine']) ? $config['database']['engine'] : 'mysql';
+            $this->engine = isset($config['database']['engine']) ? $config['database']['engine'] : 'pgsql';
 
-            $this->conn = new PDO("$this->engine:host=$this->host:$this->port;dbname=$this->database_name", $this->username, $this->password);            
+            $this->conn = new PDO("$this->engine:host=$this->host;dbname=$this->database_name", $this->username, $this->password);            
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
             die("Error de conexión: " . $e->getMessage());

@@ -3,6 +3,11 @@ require_once '../controllers/TaskController.php';
 $metho = $_SERVER['REQUEST_METHOD'];
 $objTaskController = new TaskController();
 
+//Permitir peticiones de cualquier origen
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+
 switch ($metho) {
     case 'POST':
         $putData = file_get_contents("php://input");     

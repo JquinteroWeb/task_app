@@ -25,7 +25,7 @@ class TaskDao
     public function getTask($id)
     {
         try {
-            $query = "SELECT * FROM task WHERE UID_TASK = :id";
+            $query = 'SELECT * FROM task WHERE "UID_TASK" = :id';
             $stmt = $this->con->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
@@ -50,7 +50,7 @@ class TaskDao
             $name = $task->getName();
             $status = $task->getStatus();
             $desc = $task->getDescription();
-            $query = "INSERT INTO `task` (`UID_TASK`, `NAME_TASK`, `STATUS_TASK`, `DESC_TASK`, `DATE_CREATED_TASK`) VALUES (NULL, :name, :status, :desc, NOW())";
+            $query = 'INSERT INTO task ("NAME_TASK", "STATUS_TASK", "DESC_TASK", "DATE_CREATED_TASK") VALUES (:name, :status, :desc, NOW())';
             $stmt = $this->con->prepare($query);
             $stmt->bindParam(':name', $name, PDO::PARAM_STR);
             $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
@@ -69,7 +69,7 @@ class TaskDao
 
     public function deleteTask($id)
     {
-        $query = "DELETE FROM task WHERE UID_TASK = :id";
+        $query = 'DELETE FROM task WHERE "UID_TASK" = :id';
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         if ($stmt->execute()) {
@@ -83,7 +83,7 @@ class TaskDao
         $name = $task->getName();
         $status = $task->getStatus();
         $desc = $task->getDescription();
-        $query = "UPDATE `task` SET `NAME_TASK` = :name, `STATUS_TASK` = :status, `DESC_TASK` = :desc WHERE UID_TASK = :id";
+        $query = 'UPDATE task SET "NAME_TASK" = :name, "STATUS_TASK" = :status, "DESC_TASK" = :desc WHERE "UID_TASK" = :id';
         $stmt = $this->con->prepare($query);
         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
         $stmt->bindParam(':status', $status, PDO::PARAM_BOOL);
